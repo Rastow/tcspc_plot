@@ -5,7 +5,7 @@ Visualize TCSPC data with PGFPlots & TikZ.
 ## Compilation
 
 Compile document with XeLaTeX.
-It may be required to expand main memory size with compiler argument ``----extra-mem-top=100000000``.
+It may be required to expand main memory size with compiler argument ``--extra-mem-top=100000000``.
 
 ## License
 
