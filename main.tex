@@ -1,0 +1,132 @@
+% compile using XeTeX
+\documentclass[crop]{standalone}
+
+% main font
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+
+% math font
+\usepackage{amsmath}
+\usepackage{unicode-math}
+\setmathfont{Latin Modern Math}
+\unimathsetup{
+    math-style=ISO,
+	bold-style=ISO,
+	sans-style=italic,
+	nabla=upright,
+	partial=upright,
+}
+
+% units
+\usepackage{siunitx}
+\sisetup{
+    unit-font-command=\symup,
+    locale=DE,
+    round-mode=figures,
+    round-pad=false,
+    round-precision=3,
+}
+
+% chemistry
+%greek font mapping not defined
+\usepackage{chemmacros}
+
+% pictures
+\usepackage{tikz}
+
+% plots & global settings
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{
+    compat=1.18,
+    xlabel=$t$ / \unit{\nano\second},
+    legend style={
+        legend pos=north east,
+        legend cell align=left,
+        legend columns=1,
+    },
+    every axis plot post/.append style={
+        line join=round,
+    },
+    no marks,
+    cycle list name=color list,
+    enlarge y limits=0.05,
+    enlarge x limits=false,
+    tick pos=lower,
+    tick align=outside,
+    extra tick style={
+        grid=major,
+        major grid style=dashed,
+    },
+    clip marker paths=true,
+    clip limits=true,
+}
+
+% number format
+% german locale
+\pgfkeys{
+    /pgf/number format/.cd,
+    read comma as period,
+    set decimal separator={{{,}}},
+    set thousands separator={\,},
+}
+
+% macros
+\NewDocumentCommand{\artefact}{m}{
+    \draw[thick,dashed,orange] (axis cs:#1,\pgfkeysvalueof{/pgfplots/ymin}) -- (axis cs:#1,\pgfkeysvalueof{/pgfplots/ymax});
+}
+
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[
+    group style={
+        columns=1,
+        rows=2,
+        xlabels at=edge bottom,
+        %ylabels at=edge left,
+        %horizontal sep=1.5cm,
+        %vertical sep=1.5cm,
+    },
+    width=12cm,
+    scale only axis,
+]
+
+\nextgroupplot[
+    ylabel=$I$ / counts,
+    ymode=log,
+    ymin=1,
+    height=8cm,
+    try min ticks=5,
+    extra description/.code={
+        \node[anchor=south east,fill=white,draw] at (0.97,0.03) {
+            \shortstack[l]{
+                $\chi^2 = \num{0}$\\
+                $a_1 = \qty{0}{\percent}$\\
+                $\tau_1 = \qty{0}{\nano\second}$\\
+                $a_2 = \qty{0}{\percent}$\\
+                $\tau_2 = \qty{0}{\nano\second}$
+            }
+        };
+    },
+]
+
+\addplot [black, mark=o, mark size=0.3, only marks] table [x=t, y=irf, col sep=tab]{tcspc_daten-1.txt};
+\addlegendentry{IRF}
+
+\addplot [very thin, blue] table [x=t, y=chcl3dec, col sep=tab]{tcspc_daten-1.txt};
+\addlegendentry{Decay}
+
+\addplot [thick] table [x=t, y=chcl3fit, col sep=tab]{tcspc_daten-1.txt};
+\addlegendentry{Fit}
+
+\nextgroupplot[
+    ylabel=Residuals,
+    height=2cm,
+    try min ticks=3,
+]
+
+\addplot [black, mark=o, mark size=0.3, only marks] table [x=t, y=chcl3res, col sep=tab]{tcspc_daten-1.txt};
+
+\end{groupplot}
+\end{tikzpicture}
+\end{document}
