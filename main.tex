@@ -13,7 +13,7 @@
 %
 % The Current Maintainer of this work is Robert Grzonka.
 %
-% This work consists of the files main.tex and tcspc_daten-1.txt.
+% This work consists of all files listed in manifest.txt.
 \documentclass[crop]{standalone}
 
 % main font
@@ -38,9 +38,20 @@
     unit-font-command=\symup,
     locale=DE,
     round-mode=figures,
-    round-pad=false,
+    round-pad=true,
     round-precision=3,
 }
+
+% chemistry
+%redefine chemgreek_text to use upright math alphabet instead
+\usepackage{chemmacros}
+\chemsetup{
+    greek=fontspec,
+}
+\ExplSyntaxOn
+\cs_set_protected:Nn \chemgreek_text:n
+    {\ensuremath{\symup{#1}}}
+\ExplSyntaxOff
 
 % pictures
 \usepackage{tikz}
@@ -56,9 +67,14 @@
         legend cell align=left,
         legend columns=1,
     },
-    no marks,
     enlarge y limits=0.05,
     enlarge x limits=false,
+    %xmin=20,
+    %xmax=120,
+    cycle list name=color list,
+    very thick,
+    no marks,
+    line join=round,
     tick pos=lower,
     tick align=outside,
     extra tick style={
@@ -72,14 +88,13 @@
 % define some line styles
 \pgfplotsset{
     data/.style={
-        cycle list name=color list,
         only marks,
         mark=o,
-        mark size=0.3,
+        mark size=0.4,
     },
     fit/.style={
         black,
-        thick,
+        very thick,
         no marks,
         line join=round,
     },
@@ -87,7 +102,7 @@
         black,
         only marks,
         mark=o,
-        mark size=0.3,
+        mark size=0.4,
     },
 }
 
@@ -121,24 +136,25 @@
     extra description/.code={
         \node[anchor=south east,fill=white,draw] at (0.97,0.03) {
             \shortstack[l]{
-                $\chi^2 = \num{0}$\\
-                $a_1 = \qty{0}{\percent}$\\
-                $\tau_1 = \qty{0}{\nano\second}$\\
-                $a_2 = \qty{0}{\percent}$\\
-                $\tau_2 = \qty{0}{\nano\second}$
+                $\chi^2 = \num{1.783}$\\
+                $a_1 = \qty{4.394}{\percent}$\\
+                $\tau_1 = \qty{11.3178}{\nano\second}$\\
+                $a_2 = \qty{95.606}{\percent}$\\
+                $\tau_2 = \qty{5.79907}{\nano\second}$
             }
         };
     },
 ]
 
-\addplot [data] table [x=t, y=irf, col sep=tab]{tcspc_daten-1.txt};
+\addplot [data, red] table [x=t, y=irf, col sep=tab]{data/tcspc_daten-3.txt};
 \addlegendentry{IRF}
 
-\addplot [data] table [x=t, y=chcl3dec, col sep=tab]{tcspc_daten-1.txt};
+\addplot [data, blue] table [x=t, y=100dec, col sep=tab]{data/tcspc_daten-3.txt};
 \addlegendentry{Decay}
 
-\addplot [fit] table [x=t, y=chcl3fit, col sep=tab]{tcspc_daten-1.txt};
+\addplot [fit] table [x=t, y=100fit, col sep=tab]{data/tcspc_daten-3.txt};
 \addlegendentry{Fit}
+
 
 \nextgroupplot[
     ylabel=Residuals,
@@ -146,7 +162,7 @@
     try min ticks=3,
 ]
 
-\addplot [residuals] table [x=t, y=chcl3res, col sep=tab]{tcspc_daten-1.txt};
+\addplot [residuals] table [x=t, y=100res, col sep=tab]{data/tcspc_daten-3.txt};
 
 \end{groupplot}
 \end{tikzpicture}
