@@ -1,4 +1,19 @@
-% compile using XeTeX
+%% main.tex
+%% Copyright 2022 Robert Grzonka
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status `maintained'.
+%
+% The Current Maintainer of this work is Robert Grzonka.
+%
+% This work consists of the files main.tex and tcspc_daten-1.txt.
 \documentclass[crop]{standalone}
 
 % main font
@@ -27,10 +42,6 @@
     round-precision=3,
 }
 
-% chemistry
-%greek font mapping not defined
-\usepackage{chemmacros}
-
 % pictures
 \usepackage{tikz}
 
@@ -45,11 +56,7 @@
         legend cell align=left,
         legend columns=1,
     },
-    every axis plot post/.append style={
-        line join=round,
-    },
     no marks,
-    cycle list name=color list,
     enlarge y limits=0.05,
     enlarge x limits=false,
     tick pos=lower,
@@ -62,6 +69,28 @@
     clip limits=true,
 }
 
+% define some line styles
+\pgfplotsset{
+    data/.style={
+        cycle list name=color list,
+        only marks,
+        mark=o,
+        mark size=0.3,
+    },
+    fit/.style={
+        black,
+        thick,
+        no marks,
+        line join=round,
+    },
+    residuals/.style={
+        black,
+        only marks,
+        mark=o,
+        mark size=0.3,
+    },
+}
+
 % number format
 % german locale
 \pgfkeys{
@@ -71,11 +100,6 @@
     set thousands separator={\,},
 }
 
-% macros
-\NewDocumentCommand{\artefact}{m}{
-    \draw[thick,dashed,orange] (axis cs:#1,\pgfkeysvalueof{/pgfplots/ymin}) -- (axis cs:#1,\pgfkeysvalueof{/pgfplots/ymax});
-}
-
 \begin{document}
 \begin{tikzpicture}
 \begin{groupplot}[
@@ -83,9 +107,6 @@
         columns=1,
         rows=2,
         xlabels at=edge bottom,
-        %ylabels at=edge left,
-        %horizontal sep=1.5cm,
-        %vertical sep=1.5cm,
     },
     width=12cm,
     scale only axis,
@@ -110,13 +131,13 @@
     },
 ]
 
-\addplot [black, mark=o, mark size=0.3, only marks] table [x=t, y=irf, col sep=tab]{tcspc_daten-1.txt};
+\addplot [data] table [x=t, y=irf, col sep=tab]{tcspc_daten-1.txt};
 \addlegendentry{IRF}
 
-\addplot [very thin, blue] table [x=t, y=chcl3dec, col sep=tab]{tcspc_daten-1.txt};
+\addplot [data] table [x=t, y=chcl3dec, col sep=tab]{tcspc_daten-1.txt};
 \addlegendentry{Decay}
 
-\addplot [thick] table [x=t, y=chcl3fit, col sep=tab]{tcspc_daten-1.txt};
+\addplot [fit] table [x=t, y=chcl3fit, col sep=tab]{tcspc_daten-1.txt};
 \addlegendentry{Fit}
 
 \nextgroupplot[
@@ -125,7 +146,7 @@
     try min ticks=3,
 ]
 
-\addplot [black, mark=o, mark size=0.3, only marks] table [x=t, y=chcl3res, col sep=tab]{tcspc_daten-1.txt};
+\addplot [residuals] table [x=t, y=chcl3res, col sep=tab]{tcspc_daten-1.txt};
 
 \end{groupplot}
 \end{tikzpicture}
