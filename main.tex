@@ -38,7 +38,6 @@
     unit-font-command=\symup,
     locale=DE,
     round-mode=figures,
-    round-pad=true,
     round-precision=3,
 }
 
@@ -66,20 +65,18 @@
         legend pos=north east,
         legend cell align=left,
         legend columns=1,
+        name=legend,
     },
-    enlarge y limits=0.05,
     enlarge x limits=false,
-    %xmin=20,
-    %xmax=120,
-    cycle list name=color list,
-    very thick,
-    no marks,
-    line join=round,
+    enlarge y limits=0.05,
     tick pos=lower,
     tick align=outside,
     extra tick style={
         grid=major,
-        major grid style=dashed,
+        major grid style={
+            dashed,
+            thick,
+        },
     },
     clip marker paths=true,
     clip limits=true,
@@ -89,20 +86,17 @@
 \pgfplotsset{
     data/.style={
         only marks,
-        mark=o,
+        mark=*,
         mark size=0.4,
     },
     fit/.style={
-        black,
         very thick,
         no marks,
         line join=round,
     },
     residuals/.style={
         black,
-        only marks,
-        mark=o,
-        mark size=0.4,
+        data,
     },
 }
 
@@ -120,49 +114,57 @@
 \begin{groupplot}[
     group style={
         columns=1,
-        rows=2,
+        rows=1,
         xlabels at=edge bottom,
     },
-    width=12cm,
+    width=14cm,
     scale only axis,
+    xmin=20,
+    xmax=80,
 ]
 
 \nextgroupplot[
+    height=8cm,
     ylabel=$I$ / counts,
     ymode=log,
     ymin=1,
-    height=8cm,
     try min ticks=5,
+    cycle list name=color list,
     extra description/.code={
-        \node[anchor=south east,fill=white,draw] at (0.97,0.03) {
+        \node[left=0.03,anchor=north east] at (legend.north west) {
             \shortstack[l]{
-                $\chi^2 = \num{1.783}$\\
-                $a_1 = \qty{4.394}{\percent}$\\
-                $\tau_1 = \qty{11.3178}{\nano\second}$\\
-                $a_2 = \qty{95.606}{\percent}$\\
-                $\tau_2 = \qty{5.79907}{\nano\second}$
+                \textbf{Rhodamin B}
             }
         };
     },
 ]
 
-\addplot [data, red] table [x=t, y=irf, col sep=tab]{data/tcspc_daten-3.txt};
-\addlegendentry{IRF}
+%\addplot+ [data] table [x=t, y=chcl3_irf, col sep=tab]{data/tcspc_daten-1_fit.txt};
+%\addlegendentry{IRF}
 
-\addplot [data, blue] table [x=t, y=100dec, col sep=tab]{data/tcspc_daten-3.txt};
-\addlegendentry{Decay}
+\pgfplotsinvokeforeach{chcl3,etoh,h2o,iproh}{
+    \addplot [data, forget plot] table [x=t, y=#1_dec, col sep=tab]{data/tcspc_daten-1_fit.txt};
+}
 
-\addplot [fit] table [x=t, y=100fit, col sep=tab]{data/tcspc_daten-3.txt};
-\addlegendentry{Fit}
+\pgfplotsinvokeforeach{chcl3,etoh,h2o,iproh}{
+    \addplot+ [fit] table [x=t, y=#1_fit, col sep=tab]{data/tcspc_daten-1_fit.txt};
+}
 
+\legend{
+    \ch{CHCl3},
+    \ch{EtOH},
+    \ch{H2O},
+    \ch{^{\textit{i}}PrOH},
+}
 
-\nextgroupplot[
-    ylabel=Residuals,
-    height=2cm,
-    try min ticks=3,
-]
+%\nextgroupplot[
+%    height=1.5cm,
+%    ylabel=Residuals / $\sigma$,
+%    try min ticks=3,
+%    extra y ticks={0},
+%]
 
-\addplot [residuals] table [x=t, y=100res, col sep=tab]{data/tcspc_daten-3.txt};
+%\addplot [residuals] table [x=t, y=chcl3_res, col sep=tab]{data/tcspc_daten-1_fit.txt};
 
 \end{groupplot}
 \end{tikzpicture}

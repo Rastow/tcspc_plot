@@ -10,10 +10,10 @@ MANIFEST.txt
 
 Directory data/
     Example data for use with the main document.
-tcspc_daten-1.txt
+tcspc_daten-1_fit.txt
     Rhodamine B in different solvents (chloroform, ethanol, water, iso-propanol).
-tcspc_daten-2.txt
+tcspc_daten-2_fit.txt
     9-Cyanoanthracene in acetonitrile (aerated, enriched with oxygen, degassed with nitrogen).
-tcspc_daten-3.txt
+tcspc_daten-3_fit.txt
     9-Cyanoanthracene in iso-propanol with 2-nitrotoluene of various concentrations (0mM, 2.83mM, 5.65mM, 8.48mM,
     11.3mM).
